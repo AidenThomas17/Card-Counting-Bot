@@ -1,4 +1,4 @@
-import argparse
+import argparse # Command line argument parsing
 
 from models import *  # set ONNX_EXPORT in models.py
 from utils.datasets import *
@@ -42,7 +42,8 @@ def detect(save_img=False):
     # Load weights
     attempt_download(weights)
     if weights.endswith('.pt'):  # pytorch format
-        model.load_state_dict(torch.load(weights, map_location=device)['model'])
+       #model.load_state_dict(torch.load(weights, map_location=device)['model'])
+        model.load_state_dict(torch.load(weights, map_location=device)['model'], strict=False)
     else:  # darknet format
         load_darknet_weights(model, weights)
 
@@ -172,17 +173,17 @@ def detect(save_img=False):
                 # print('%sDone. (%.3fs)' % (s, t2 - t1))
 
                 # Stream results
-                if view_img:
+                if view_img: # Display results
                     cv2.imshow(p, im0)
                     if cv2.waitKey(1) == ord('q'):  # q to quit
                         raise StopIteration
             
             #Blackjack gameplay
-            evaluate_position(cards_in_frame, names)
+            evaluate_position(cards_in_frame, names) #Evaluate the current position
 
-        frame_number += 1
+        frame_number += 1 #Increment frame number
 
-    print('Done. (%.3fs)' % (time.time() - t0))
+    print('Done. (%.3fs)' % (time.time() - t0)) #Print total time taken
 
 def update_seen_cards():
     global seen_cards
@@ -237,8 +238,8 @@ def evaluate_position(cards, names):
     global past_one
     my_cards = []
     dealer_cards = []
-    update_seen_cards()
-    for card in cards:
+    update_seen_cards() 
+    for card in cards: #card = (class, x, y)
         card_class, card_x, card_y = card
         if card_y > 0.5:
             my_cards.append(card_class)
@@ -246,11 +247,11 @@ def evaluate_position(cards, names):
             dealer_cards.append(card_class)
 
     hand_value = 0
-    my_card_names = [names[x] for x in my_cards]
-    dealer_card_names = [names[y] for y in dealer_cards]
+    my_card_names = [names[x] for x in my_cards] #Get card names
+    dealer_card_names = [names[y] for y in dealer_cards] 
     print("MY CARDS:", my_card_names)
     print("DEALER CARDS:", dealer_card_names)
-    my_card_values = [int(card_values[x]) for x in my_cards]
+    my_card_values = [int(card_values[x]) for x in my_cards] # Get card values
     dealer_card_values = [int(card_values[y]) for y in dealer_cards]
     # print("EVALUATED:", cards)
     # print("MY CARDS:", my_cards)
@@ -265,13 +266,13 @@ def evaluate_position(cards, names):
         else:
             print("**********STAND**********")
     if len(my_cards) == 0 and len(dealer_cards) == 0:
-        if running_total >= 0:
+        if running_total >= 0: #Bet size is 10 times the running total
             bet_size = 10*(running_total+1)
         else:
             bet_size = 10
         print("BET:", bet_size)
     print("RUNNING TOTAL:", str(running_total))
-    past_five = past_four.copy()
+    past_five = past_four.copy() #Update past hands
     past_four = past_three.copy()
     past_three = past_two.copy()
     past_two = past_one.copy()
